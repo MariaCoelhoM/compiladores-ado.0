@@ -1,256 +1,46 @@
-End.  Cod.  Op.    Mnem.
----------------------------
-  0    20
-  1   254
-  2    48  255   ADD 255
-  4    16  253   STA 253
-  6   240        HLT
-  7     0        NOP
-  8     0        NOP
-  9     0        NOP
- 10     0        NOP
- 11     0        NOP
- 12     0        NOP
- 13     0        NOP
- 14     0        NOP
- 15     0        NOP
- 16     0        NOP
- 17     0        NOP
- 18     0        NOP
- 19     0        NOP
- 20     0        NOP
- 21     0        NOP
- 22     0        NOP
- 23     0        NOP
- 24     0        NOP
- 25     0        NOP
- 26     0        NOP
- 27     0        NOP
- 28     0        NOP
- 29     0        NOP
- 30     0        NOP
- 31     0        NOP
- 32     0        NOP
- 33     0        NOP
- 34     0        NOP
- 35     0        NOP
- 36     0        NOP
- 37     0        NOP
- 38     0        NOP
- 39     0        NOP
- 40     0        NOP
- 41     0        NOP
- 42     0        NOP
- 43     0        NOP
- 44     0        NOP
- 45     0        NOP
- 46     0        NOP
- 47     0        NOP
- 48     0        NOP
- 49     0        NOP
- 50     0        NOP
- 51     0        NOP
- 52     0        NOP
- 53     0        NOP
- 54     0        NOP
- 55     0        NOP
- 56     0        NOP
- 57     0        NOP
- 58     0        NOP
- 59     0        NOP
- 60     0        NOP
- 61     0        NOP
- 62     0        NOP
- 63     0        NOP
- 64     0        NOP
- 65     0        NOP
- 66     0        NOP
- 67     0        NOP
- 68     0        NOP
- 69     0        NOP
- 70     0        NOP
- 71     0        NOP
- 72     0        NOP
- 73     0        NOP
- 74     0        NOP
- 75     0        NOP
- 76     0        NOP
- 77     0        NOP
- 78     0        NOP
- 79     0        NOP
- 80     0        NOP
- 81     0        NOP
- 82     0        NOP
- 83     0        NOP
- 84     0        NOP
- 85     0        NOP
- 86     0        NOP
- 87     0        NOP
- 88     0        NOP
- 89     0        NOP
- 90     0        NOP
- 91     0        NOP
- 92     0        NOP
- 93     0        NOP
- 94     0        NOP
- 95     0        NOP
- 96     0        NOP
- 97     0        NOP
- 98     0        NOP
- 99     0        NOP
-100     0        NOP
-101     0        NOP
-102     0        NOP
-103     0        NOP
-104     0        NOP
-105     0        NOP
-106     0        NOP
-107     0        NOP
-108     0        NOP
-109     0        NOP
-110     0        NOP
-111     0        NOP
-112     0        NOP
-113     0        NOP
-114     0        NOP
-115     0        NOP
-116     0        NOP
-117     0        NOP
-118     0        NOP
-119     0        NOP
-120     0        NOP
-121     0        NOP
-122     0        NOP
-123     0        NOP
-124     0        NOP
-125     0        NOP
-126     0        NOP
-127     0        NOP
-128     0        NOP
-129     0        NOP
-130     0        NOP
-131     0        NOP
-132     0        NOP
-133     0        NOP
-134     0        NOP
-135     0        NOP
-136     0        NOP
-137     0        NOP
-138     0        NOP
-139     0        NOP
-140     0        NOP
-141     0        NOP
-142     0        NOP
-143     0        NOP
-144     0        NOP
-145     0        NOP
-146     0        NOP
-147     0        NOP
-148     0        NOP
-149     0        NOP
-150     0        NOP
-151     0        NOP
-152     0        NOP
-153     0        NOP
-154     0        NOP
-155     0        NOP
-156     0        NOP
-157     0        NOP
-158     0        NOP
-159     0        NOP
-160     0        NOP
-161     0        NOP
-162     0        NOP
-163     0        NOP
-164     0        NOP
-165     0        NOP
-166     0        NOP
-167     0        NOP
-168     0        NOP
-169     0        NOP
-170     0        NOP
-171     0        NOP
-172     0        NOP
-173     0        NOP
-174     0        NOP
-175     0        NOP
-176     0        NOP
-177     0        NOP
-178     0        NOP
-179     0        NOP
-180     0        NOP
-181     0        NOP
-182     0        NOP
-183     0        NOP
-184     0        NOP
-185     0        NOP
-186     0        NOP
-187     0        NOP
-188     0        NOP
-189     0        NOP
-190     0        NOP
-191     0        NOP
-192     0        NOP
-193     0        NOP
-194     0        NOP
-195     0        NOP
-196     0        NOP
-197     0        NOP
-198     0        NOP
-199     0        NOP
-200     0        NOP
-201     0        NOP
-202     0        NOP
-203     0        NOP
-204     0        NOP
-205     0        NOP
-206     0        NOP
-207     0        NOP
-208     0        NOP
-209     0        NOP
-210     0        NOP
-211     0        NOP
-212     0        NOP
-213     0        NOP
-214     0        NOP
-215     0        NOP
-216     0        NOP
-217     0        NOP
-218     0        NOP
-219     0        NOP
-220     0        NOP
-221     0        NOP
-222     0        NOP
-223     0        NOP
-224     0        NOP
-225     0        NOP
-226     0        NOP
-227     0        NOP
-228     0        NOP
-229     0        NOP
-230     0        NOP
-231     0        NOP
-232     0        NOP
-233     0        NOP
-234     0        NOP
-235     0        NOP
-236     0        NOP
-237     0        NOP
-238     0        NOP
-239     0        NOP
-240     0        NOP
-241     0        NOP
-242     0        NOP
-243     0        NOP
-244     0        NOP
-245     0        NOP
-246     0        NOP
-247     0        NOP
-248     0        NOP
-249     0        NOP
-250     0        NOP
-251     0        NOP
-252     0        NOP
-253    20
-254    10
-255    20
+--- ANTES DA EXECUCAO ---
+Mapa de Memoria:
+32 0 254 0 48 0 253 0 16 0 255 0 240 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+--- STATUS FINAL ---
+AC: 32
+PC: 3
+Flag N: 0
+Flag Z: 0
+Acessos a memoria: 4
+Instrucoes executadas: 2
+
+--- DEPOIS DA EXECUCAO ---
+Mapa de Memoria:
+32 0 254 0 48 0 253 0 16 0 255 0 240 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+

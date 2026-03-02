@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Tabela padrão do Neander
 const char* get_mnemonic(unsigned char opcode) {
     switch (opcode) {
         case 0:   return "NOP";
         case 16:  return "STA";
         case 32:  return "LDA";
-        case 48:  return "ADD";
+        case 48:  return "ADD"; // Apenas o 48 é ADD agora
         case 64:  return "OR";
         case 80:  return "AND";
         case 96:  return "NOT";
@@ -19,7 +20,11 @@ const char* get_mnemonic(unsigned char opcode) {
 }
 
 int has_operand(unsigned char opcode) {
-    if (opcode >= 16 && opcode <= 160 && opcode != 96) return 1;
+    // Apenas estas instruções puxam o próximo byte como endereço
+    if (opcode == 16 || opcode == 32 || opcode == 48 || 
+        opcode == 64 || opcode == 80 || (opcode >= 128 && opcode <= 160)) {
+        return 1;
+    }
     return 0;
 }
 
@@ -30,7 +35,7 @@ int main() {
         return 1;
     }
 
-    // We laden het hele bestand in een buffer
+    // Carregar o ficheiro binário
     fseek(fileIn, 0, SEEK_END);
     long size = ftell(fileIn);
     fseek(fileIn, 0, SEEK_SET);
@@ -38,43 +43,41 @@ int main() {
     fread(buffer, 1, size, fileIn);
     fclose(fileIn);
 
+    unsigned char memory[256] = {0};
+    int memPos = 0;
+
+    // Lógica de Extração: 
+    // O seu ficheiro parece ter 2 bytes para cada posição de memória.
+    // O byte de dados real está na posição par, começando após o cabeçalho "NDR2"
+    for (int i = 4; i < size && memPos < 256; i += 2) {
+        memory[memPos++] = buffer[i];
+    }
+
     FILE *fileOut = fopen("resultado.txt", "w");
     fprintf(fileOut, "End.  Cod.  Op.    Mnem.\n");
     fprintf(fileOut, "---------------------------\n");
 
-    // We maken een schone geheugenkaart van 256 bytes
-    unsigned char memory[256] = {0};
-
-    /* LOGICA VOOR JOUW BESTAND:
-       In jouw 'teste salvo.mem' staan de data bytes om de 2 bytes (bijv. op 4, 6, 8...).
-       We gaan de bytes extraheren naar de juiste Neander adressen.
-    */
-    int memPos = 0;
-    for (int i = 4; i < size && memPos < 256; i += 2) {
-        memory[memPos] = buffer[i];
-        memPos++;
-    }
-
-    // Nu printen we de geheugenkaart zoals in teste salvotexto.txt
     for (int i = 0; i < 256; i++) {
         unsigned char opcode = memory[i];
         const char* mnemonic = get_mnemonic(opcode);
 
         if (mnemonic != NULL && has_operand(opcode) && i < 255) {
-            unsigned char operand = memory[i+1];
+            unsigned char operand = memory[i + 1];
             fprintf(fileOut, "%3d   %3d  %3d   %s %d\n", i, opcode, operand, mnemonic, operand);
             i++; 
         } else if (mnemonic != NULL) {
             fprintf(fileOut, "%3d   %3d        %s\n", i, opcode, mnemonic);
-        } else if (opcode != 0) {
-            fprintf(fileOut, "%3d   %3d\n", i, opcode);
         } else {
-            fprintf(fileOut, "%3d     0        NOP\n", i);
+            // Se não for uma instrução conhecida, imprime apenas o valor (como o 50 ou 20)
+            if (opcode == 0)
+                fprintf(fileOut, "%3d     0        NOP\n", i);
+            else
+                fprintf(fileOut, "%3d   %3d\n", i, opcode);
         }
     }
 
     free(buffer);
     fclose(fileOut);
-    printf("Pronto! Agora o arquivo 'resultado.txt' deve estar igual ao seu texto.\n");
+    printf("Conversão terminada! Verifique o resultado.txt\n");
     return 0;
 }
