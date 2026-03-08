@@ -4,26 +4,21 @@
 #include <stdbool.h>
 #include <string.h>
 
-// Definições de Instruções Neander
-#define NOP  0x00
-#define STA  0x10
-#define LDA  0x20
-#define ADD  0x30
-#define OR   0x40
-#define AND  0x50
-#define NOT  0x60
-#define JMP  0x80
-#define JN   0x90
-#define JZ   0xA0
-#define HLT  0xF0
+#define MEM_SIZE 256
+
+// Opcodes Neander
+typedef enum {
+    NOP = 0x00, STA = 0x10, LDA = 0x20, ADD = 0x30, OR  = 0x40,
+    AND = 0x50, NOT = 0x60, JMP = 0x80, JN  = 0x90, JZ  = 0xA0, HLT = 0xF0
+} Opcode;
 
 typedef struct {
-    uint8_t mem[256];
-    uint8_t ac;      // Acumulador
-    uint8_t pc;      // Program Counter
-    bool n, z;       // Flags
-    int mem_access;  // Contador de acessos à memória
-    int inst_count;  // Contador de instruções
+    uint8_t mem[MEM_SIZE];
+    uint8_t ac;
+    uint8_t pc;
+    bool n, z;
+    int mem_access;
+    int inst_count;
 } Neander;
 
 void update_flags(Neander *n) {
@@ -31,41 +26,56 @@ void update_flags(Neander *n) {
     n->n = (n->ac & 0x80) != 0; 
 }
 
-void print_mem_map(FILE *out, uint8_t *mem, bool hex) {
-    fprintf(out, "Mapa de Memoria:\n");
-    for (int i = 0; i < 256; i++) {
-        if (hex) fprintf(out, "%02X ", mem[i]);
-        else fprintf(out, "%d ", mem[i]);
-        if ((i + 1) % 16 == 0) fprintf(out, "\n");
+void print_output(FILE *dest, Neander *cpu, uint8_t *original_mem, bool hex) {
+    fprintf(dest, "\n--- MAPA DE MEMORIA (ANTES) ---\n");
+    for (int i = 0; i < MEM_SIZE; i++) {
+        fprintf(dest, hex ? "%02X " : "%3d ", original_mem[i]);
+        if ((i + 1) % 16 == 0) fprintf(dest, "\n");
     }
-    fprintf(out, "\n");
+
+    fprintf(dest, "\n--- STATUS FINAL ---\n");
+    if (hex) {
+        fprintf(dest, "AC: %02X\nPC: %02X\n", cpu->ac, cpu->pc);
+    } else {
+        fprintf(dest, "AC: %d\nPC: %d\n", cpu->ac, cpu->pc);
+    }
+    fprintf(dest, "Flag N: %d\nFlag Z: %d\n", cpu->n, cpu->z);
+    fprintf(dest, "Acessos a memoria: %d\n", cpu->mem_access);
+    fprintf(dest, "Instrucoes executadas: %d\n", cpu->inst_count);
+
+    fprintf(dest, "\n--- MAPA DE MEMORIA (DEPOIS) ---\n");
+    for (int i = 0; i < MEM_SIZE; i++) {
+        fprintf(dest, hex ? "%02X " : "%3d ", cpu->mem[i]);
+        if ((i + 1) % 16 == 0) fprintf(dest, "\n");
+    }
 }
 
 int main(int argc, char *argv[]) {
-    bool use_hex = false;
-    if (argc > 1 && strcmp(argv[1], "-h") == 0) use_hex = true;
-
-    Neander cpu = {0};
-    FILE *f_in = fopen("teste salvo.mem", "rb");
-    FILE *f_out = fopen("resultado.txt", "w");
-
-    if (!f_in || !f_out) {
-        printf("Erro ao abrir arquivos.\n");
+    if (argc < 2) {
+        printf("Uso: %s <arquivo.mem> [-h para hexadecimal]\n", argv[0]);
         return 1;
     }
 
-    
+    bool use_hex = (argc > 2 && strcmp(argv[2], "-h") == 0);
+    Neander cpu = {0};
+    uint8_t original_mem[MEM_SIZE];
+
+    FILE *f_in = fopen(argv[1], "rb");
+    if (!f_in) {
+        perror("Erro ao abrir arquivo de entrada");
+        return 1;
+    }
+
+    // Pula o cabeçalho de 4 bytes do Neander (03 4E 00 00)
     fseek(f_in, 4, SEEK_SET);
-    fread(cpu.mem, 1, 256, f_in);
+    fread(cpu.mem, 1, MEM_SIZE, f_in);
+    memcpy(original_mem, cpu.mem, MEM_SIZE); // Backup para o "Antes"
     fclose(f_in);
 
-    fprintf(f_out, "--- ANTES DA EXECUCAO ---\n");
-    print_mem_map(f_out, cpu.mem, use_hex);
-
     bool running = true;
-    while (running && cpu.pc < 256) {
+    while (running && cpu.pc < MEM_SIZE) {
         uint8_t opcode = cpu.mem[cpu.pc++];
-        cpu.mem_access++;
+        cpu.mem_access++; 
         cpu.inst_count++;
 
         switch (opcode) {
@@ -73,34 +83,20 @@ int main(int argc, char *argv[]) {
             case STA: {
                 uint8_t addr = cpu.mem[cpu.pc++];
                 cpu.mem[addr] = cpu.ac;
-                cpu.mem_access += 2; 
+                cpu.mem_access += 2; // +1 ender. instrução, +1 escrita dado
                 break;
             }
-            case LDA: {
-                uint8_t addr = cpu.mem[cpu.pc++];
-                cpu.ac = cpu.mem[addr];
-                cpu.mem_access += 2;
-                update_flags(&cpu);
-                break;
-            }
-            case ADD: {
-                uint8_t addr = cpu.mem[cpu.pc++];
-                cpu.ac += cpu.mem[addr];
-                cpu.mem_access += 2;
-                update_flags(&cpu);
-                break;
-            }
-            case OR: {
-                uint8_t addr = cpu.mem[cpu.pc++];
-                cpu.ac |= cpu.mem[addr];
-                cpu.mem_access += 2;
-                update_flags(&cpu);
-                break;
-            }
+            case LDA:
+            case ADD:
+            case OR:
             case AND: {
                 uint8_t addr = cpu.mem[cpu.pc++];
-                cpu.ac &= cpu.mem[addr];
-                cpu.mem_access += 2;
+                if (opcode == LDA) cpu.ac = cpu.mem[addr];
+                else if (opcode == ADD) cpu.ac += cpu.mem[addr];
+                else if (opcode == OR)  cpu.ac |= cpu.mem[addr];
+                else if (opcode == AND) cpu.ac &= cpu.mem[addr];
+                
+                cpu.mem_access += 2; // +1 ender. instrução, +1 leitura dado
                 update_flags(&cpu);
                 break;
             }
@@ -110,41 +106,33 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case JMP: {
-                cpu.pc = cpu.mem[cpu.pc];
-                cpu.mem_access++;
+                cpu.pc = cpu.mem[cpu.pc]; // Salta para o endereço apontado
+                cpu.mem_access++; 
                 break;
             }
-            case JN: {
-                if (cpu.n) cpu.pc = cpu.mem[cpu.pc];
-                else cpu.pc++;
-                cpu.mem_access++;
-                break;
-            }
+            case JN:
             case JZ: {
-                if (cpu.z) cpu.pc = cpu.mem[cpu.pc];
-                else cpu.pc++;
+                bool condition = (opcode == JN) ? cpu.n : cpu.z;
+                if (condition) {
+                    cpu.pc = cpu.mem[cpu.pc];
+                } else {
+                    cpu.pc++; 
+                }
                 cpu.mem_access++;
                 break;
             }
             case HLT: running = false; break;
-            default: running = false; break;
+            default:  running = false; break;
         }
     }
 
-    fprintf(f_out, "--- STATUS FINAL ---\n");
-    if (use_hex) {
-        fprintf(f_out, "AC: %02X\nPC: %02X\n", cpu.ac, cpu.pc);
-    } else {
-        fprintf(f_out, "AC: %d\nPC: %d\n", cpu.ac, cpu.pc);
+    FILE *f_out = fopen("resultado.txt", "w");
+    if (f_out) {
+        print_output(f_out, &cpu, original_mem, use_hex);
+        fclose(f_out);
     }
-    fprintf(f_out, "Flag N: %d\nFlag Z: %d\n", cpu.n, cpu.z);
-    fprintf(f_out, "Acessos a memoria: %d\n", cpu.mem_access);
-    fprintf(f_out, "Instrucoes executadas: %d\n\n", cpu.inst_count);
 
-    fprintf(f_out, "--- DEPOIS DA EXECUCAO ---\n");
-    print_mem_map(f_out, cpu.mem, use_hex);
+    print_output(stdout, &cpu, original_mem, use_hex);
 
-    fclose(f_out);
-    printf("Simulacao concluida. Verifique resultado.txt\n");
     return 0;
 }
